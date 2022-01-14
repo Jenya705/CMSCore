@@ -1,0 +1,15 @@
+{
+  "server": {
+    "port": 25565
+  },
+  "instance": {
+    "default": "test_instance",
+    "test_instance": {
+      "generator": "void"
+    }
+  },
+  "ping": {
+    "motd": "HotCore server",
+    "brandname": "HotCore"
+  }
+}
