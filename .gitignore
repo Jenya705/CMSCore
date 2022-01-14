@@ -118,5 +118,5 @@ run/
 !gradle-wrapper.jar
 
 # Runtime files
-./config.json
+config.json
 extensions/
