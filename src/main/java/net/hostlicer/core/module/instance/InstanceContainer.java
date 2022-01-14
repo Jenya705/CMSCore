@@ -9,6 +9,8 @@ import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.tag.Tag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -24,6 +26,9 @@ public class InstanceContainer {
         globalTags.addAll(Arrays.asList(tags));
     }
 
+    @Getter(AccessLevel.PROTECTED)
+    private final Logger logger;
+
     private final String name;
     private final Instance instance;
     private final Point respawnPoint;
@@ -31,6 +36,8 @@ public class InstanceContainer {
     private final InstanceModule instanceModule = CoreApplication.getInstance().getModule("instance");
 
     public InstanceContainer(String instanceName, ConfigData data) {
+        logger = LoggerFactory.getLogger("HotCore - %s".formatted(instanceName));
+        logger.info("Loading {} instance", instanceName);
         name = instanceName;
         instance = MinecraftServer.getInstanceManager().createInstanceContainer();
         respawnPoint = data.get("spawn", new Vec(0, 64, 0));

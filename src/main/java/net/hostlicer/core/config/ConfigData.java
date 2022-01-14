@@ -27,7 +27,11 @@ public class ConfigData {
         json.put(key, defaultValue);
         return defaultValue;
     }
-    
+
+    public String[] get(String key, String[] defaultValue) {
+        return getT(key, defaultValue);
+    }
+
     public String get(String key, String defaultValue) {
         return getT(key, defaultValue);
     }
@@ -69,11 +73,16 @@ public class ConfigData {
         if (json.containsKey(key)) {
             return new ConfigData(getT(key, null));
         }
+        set(key, defaultValue.json);
         return defaultValue;
     }
 
     public Object get(String key) {
-        return json.get(key);
+        Object obj = json.get(key);
+        if (obj instanceof JSONObject json) {
+            return new ConfigData(json);
+        }
+        return obj;
     }
     
     public boolean has(String key) {

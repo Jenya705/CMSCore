@@ -3,13 +3,12 @@ package net.hostlicer.core.module.instance;
 import net.hostlicer.core.config.ConfigData;
 import net.hostlicer.core.module.AbstractCoreModule;
 import net.hostlicer.core.module.instance.generator.ChunkGeneratorFactory;
+import net.hostlicer.core.module.instance.generator.FlatGenerator;
 import net.hostlicer.core.module.instance.generator.VoidGenerator;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Player;
-import net.minestom.server.event.EventNode;
 import net.minestom.server.event.player.PlayerLoginEvent;
 import net.minestom.server.instance.ChunkGenerator;
-import net.minestom.server.instance.Instance;
 
 import java.util.Locale;
 import java.util.Map;
@@ -27,6 +26,7 @@ public class InstanceModule extends AbstractCoreModule {
                 "blockPlace"
         );
         addChunkGeneratorFactory("void", ChunkGeneratorFactory.of(VoidGenerator::new));
+        addChunkGeneratorFactory("flat", ChunkGeneratorFactory.of(FlatGenerator::new));
     }
 
     @Override
