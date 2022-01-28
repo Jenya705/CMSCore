@@ -1,12 +1,21 @@
 package net.hostlicer.core.module.instance;
 
+import io.github.bloepiloepi.pvp.PvpExtension;
+import io.github.bloepiloepi.pvp.events.EntityKnockbackEvent;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.hostlicer.core.CoreApplication;
 import net.hostlicer.core.config.ConfigData;
+import net.hostlicer.core.module.CoreTags;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Vec;
+import net.minestom.server.event.EventFilter;
+import net.minestom.server.event.EventNode;
+import net.minestom.server.event.entity.EntityAttackEvent;
+import net.minestom.server.event.entity.EntityDamageEvent;
+import net.minestom.server.event.trait.EntityEvent;
+import net.minestom.server.event.trait.InstanceEvent;
 import net.minestom.server.instance.IChunkLoader;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.tag.Tag;
@@ -15,7 +24,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -49,14 +57,32 @@ public class InstanceContainer {
         else {
             generator(data);
         }
-        data.values().forEach((name, obj) -> {
-            globalTags
-                    .stream()
-                    .filter(it -> name.equals(it.getKey()))
-                    .findAny()
-                    .ifPresent(value -> addTag(value, obj));
-        });
+        data.values().forEach((name, obj) ->
+                globalTags
+                        .stream()
+                        .filter(it -> name.equals(it.getKey()))
+                        .findAny()
+                        .ifPresent(value -> addTag(value, obj))
+        );
+        nodes();
+    }
 
+    private void nodes() {
+        EventNode<EntityEvent> eventNode = EventNode.event(
+                "%s-instance".formatted(name),
+                EventFilter.ENTITY,
+                event -> {
+                    if (event instanceof InstanceEvent instanceEvent) {
+                        return Objects.equals(instanceEvent.getInstance(), instance);
+                    }
+                    return Objects.equals(event.getEntity().getInstance(), instance);
+                }
+        );
+        if (Objects.requireNonNullElse(instance.getTag(CoreTags.instancePvp), 0).byteValue() != 0) {
+            eventNode.addChild(PvpExtension.attackEvents());
+            eventNode.addChild(PvpExtension.damageEvents());
+        }
+        MinecraftServer.getGlobalEventHandler().addChild(eventNode);
     }
 
     private void loader(ConfigData data) {

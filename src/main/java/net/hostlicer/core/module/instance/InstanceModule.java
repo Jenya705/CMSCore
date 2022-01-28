@@ -1,15 +1,19 @@
 package net.hostlicer.core.module.instance;
 
+import io.github.bloepiloepi.pvp.PvpExtension;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.hostlicer.core.config.ConfigData;
 import net.hostlicer.core.factory.Factory;
 import net.hostlicer.core.module.AbstractCoreModule;
+import net.hostlicer.core.module.CoreTags;
 import net.hostlicer.core.module.instance.generator.FlatGenerator;
 import net.hostlicer.core.module.instance.generator.VoidGenerator;
 import net.hostlicer.core.module.instance.loader.AnvilLoaderFactory;
+import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Player;
+import net.minestom.server.event.GlobalEventHandler;
 import net.minestom.server.event.player.PlayerLoginEvent;
 import net.minestom.server.instance.ChunkGenerator;
 import net.minestom.server.instance.IChunkLoader;
@@ -29,7 +33,7 @@ public class InstanceModule extends AbstractCoreModule {
     public InstanceModule() {
         super("instance");
         InstanceContainer.addTags(
-
+                CoreTags.instancePvp
         );
         chunkLoaderFactories.addFactory("anvil", AnvilLoaderFactory::create);
         chunkGeneratorFactories.addFactory("void", VoidGenerator::new);
@@ -38,6 +42,7 @@ public class InstanceModule extends AbstractCoreModule {
 
     @Override
     public void start() {
+        PvpExtension.init();
         config().getInstance().getInstanceConfigs().forEach(
                 (s, configData) -> {
                     try {

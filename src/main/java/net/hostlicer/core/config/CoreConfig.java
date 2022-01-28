@@ -28,6 +28,7 @@ public class CoreConfig {
     private final ServerConfig server;
     private final PingConfig ping;
     private final InstanceConfig instance;
+    private final SettingsConfig settings;
 
     @SneakyThrows
     public static CoreConfig load(Path path) {
@@ -49,6 +50,7 @@ public class CoreConfig {
                 .server(ServerConfig.from(configData.get("server", ConfigData.empty())))
                 .ping(PingConfig.from(configData.get("ping", ConfigData.empty())))
                 .instance(InstanceConfig.from(configData.get("instance", ConfigData.empty())))
+                .settings(SettingsConfig.from(configData.get("settings", ConfigData.empty())))
                 .build();
 
         @Cleanup Writer writer = new FileWriter(configFile);

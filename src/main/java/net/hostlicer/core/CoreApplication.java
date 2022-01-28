@@ -9,7 +9,6 @@ import net.hostlicer.core.module.ping.PingModule;
 import net.minestom.server.MinecraftServer;
 
 import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
