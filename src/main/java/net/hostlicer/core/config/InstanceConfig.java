@@ -2,8 +2,6 @@ package net.hostlicer.core.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import net.minestom.server.coordinate.Point;
-import net.minestom.server.coordinate.Vec;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -19,8 +17,8 @@ public class InstanceConfig {
     private final String defaultInstance;
 
     public static InstanceConfig from(ConfigData config) {
-        if (!config.has("test_instance")) {
-            ConfigData testInstance = config.get("test_instance", ConfigData.empty());
+        if (!config.has("testInstance")) {
+            ConfigData testInstance = config.get("testInstance", ConfigData.empty());
             testInstance.set("generator", "void");
         }
         Map<String, ConfigData> instanceConfigs = new HashMap<>();
@@ -31,7 +29,7 @@ public class InstanceConfig {
         });
         return new InstanceConfig(
                 Collections.unmodifiableMap(instanceConfigs),
-                config.get("default", "test_instance")
+                config.get("default", "testInstance")
         );
     }
 

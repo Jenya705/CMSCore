@@ -21,8 +21,8 @@ public class FlatGenerator implements ChunkGenerator {
                                         "layers",
                                         new String[]{
                                                 "minecraft:grass_block",
-                                                "minecraft:grass_block",
-                                                "minecraft:grass_block",
+                                                "minecraft:dirt",
+                                                "minecraft:dirt",
                                                 "minecraft:bedrock"
                                         }
                                 )

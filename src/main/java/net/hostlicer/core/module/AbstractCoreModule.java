@@ -21,7 +21,7 @@ public abstract class AbstractCoreModule {
     @Getter
     private final String name;
 
-    private final Logger logger;
+    protected final Logger logger;
 
     protected AbstractCoreModule(String name) {
         this.name = name;

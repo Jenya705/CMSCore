@@ -120,3 +120,4 @@ run/
 # Runtime files
 config.json
 extensions/
+world/

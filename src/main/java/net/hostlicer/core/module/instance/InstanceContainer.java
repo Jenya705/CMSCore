@@ -7,6 +7,7 @@ import net.hostlicer.core.config.ConfigData;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Vec;
+import net.minestom.server.instance.IChunkLoader;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.tag.Tag;
 import org.slf4j.Logger;
@@ -14,20 +15,21 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 @Getter(AccessLevel.PROTECTED)
 public class InstanceContainer {
 
-    private static final Set<String> globalTags = new CopyOnWriteArraySet<>();
+    private static final Set<Tag<?>> globalTags = new CopyOnWriteArraySet<>();
 
-    public static void addTags(String... tags) {
+    public static void addTags(Tag<?>... tags) {
         globalTags.addAll(Arrays.asList(tags));
     }
 
     @Getter(AccessLevel.PROTECTED)
-    private final Logger logger;
+    protected final Logger logger;
 
     private final String name;
     private final Instance instance;
@@ -41,43 +43,80 @@ public class InstanceContainer {
         name = instanceName;
         instance = MinecraftServer.getInstanceManager().createInstanceContainer();
         respawnPoint = data.get("spawn", new Vec(0, 64, 0));
-        Object generatorObject = data.get("generator");
-        if (generatorObject instanceof ConfigData generatorData) {
-            instance.setChunkGenerator(instanceModule.createChunkGenerator(
-                    generatorData.get("type", "void"), generatorData));
+        if (data.has("loader")) {
+            loader(data);
         }
         else {
-            instance.setChunkGenerator(instanceModule.createChunkGenerator(
-                    Objects.requireNonNullElse(generatorObject, "void").toString(), null));
+            generator(data);
         }
         data.values().forEach((name, obj) -> {
-            if (globalTags.contains(name)) {
-                addTag(name, obj);
-            }
+            globalTags
+                    .stream()
+                    .filter(it -> name.equals(it.getKey()))
+                    .findAny()
+                    .ifPresent(value -> addTag(value, obj));
         });
+
     }
 
-    private void addTag(String name, Object obj) {
-        if (obj instanceof Byte) {
-            instance.setTag(Tag.Byte(name), (byte) obj);
+    private void loader(ConfigData data) {
+        Object loaderObject = data.get("loader");
+        if (loaderObject == null) return;
+        IChunkLoader loader;
+        if (loaderObject instanceof ConfigData loaderData) {
+            if (!loaderData.has("type")) return;
+            loader = instanceModule.getChunkLoaderFactories().create(
+                    loaderData.get("type", ""), loaderData
+            );
+        }
+        else {
+            loader = instanceModule.getChunkLoaderFactories().create(
+                    loaderObject.toString()
+            );
+        }
+        if (loader == null) return;
+        loader.loadInstance(instance);
+    }
+
+    private void generator(ConfigData data) {
+        Object generatorObject = data.get("generator");
+        if (generatorObject instanceof ConfigData generatorData) {
+            instance.setChunkGenerator(instanceModule.getChunkGeneratorFactories().create(
+                    generatorData.get("type", "void"), generatorData)
+            );
+        }
+        else {
+            instance.setChunkGenerator(instanceModule.getChunkGeneratorFactories().create(
+                    Objects.requireNonNullElse(generatorObject, "void").toString(), null)
+            );
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void addTag(Tag<?> tag, Object obj) {
+        if (obj instanceof Boolean) {
+            instance.setTag((Tag<Byte>) tag, (byte) ((boolean) obj ? 1 : 0));
+        }
+        else if (obj instanceof Byte) {
+            instance.setTag((Tag<Byte>) tag, (byte) obj);
         }
         else if (obj instanceof Short) {
-            instance.setTag(Tag.Short(name), (short) obj);
+            instance.setTag((Tag<Short>) tag, (short) obj);
         }
         else if (obj instanceof Integer) {
-            instance.setTag(Tag.Integer(name), (int) obj);
+            instance.setTag((Tag<Integer>) tag, (int) obj);
         }
         else if (obj instanceof Long) {
-            instance.setTag(Tag.Long(name), (long) obj);
+            instance.setTag((Tag<Long>) tag, (long) obj);
         }
         else if (obj instanceof Float) {
-            instance.setTag(Tag.Float(name), (float) obj);
+            instance.setTag((Tag<Float>) tag, (float) obj);
         }
         else if (obj instanceof Double) {
-            instance.setTag(Tag.Double(name), (double) obj);
+            instance.setTag((Tag<Double>) tag, (double) obj);
         }
         else if (obj instanceof String) {
-            instance.setTag(Tag.String(name), (String) obj);
+            instance.setTag((Tag<String>) tag, (String) obj);
         }
         else {
             throw new IllegalArgumentException("Type is not supported");
