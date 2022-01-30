@@ -1,7 +1,9 @@
 package net.hostlicer.core;
 
 import lombok.Getter;
+import net.hostlicer.core.command.BlocksCommand;
 import net.hostlicer.core.command.GameModeCommand;
+import net.hostlicer.core.command.PosCommand;
 import net.hostlicer.core.config.CoreConfig;
 import net.hostlicer.core.module.AbstractCoreModule;
 import net.hostlicer.core.module.instance.InstanceModule;
@@ -36,6 +38,8 @@ public class CoreApplication {
 
     public void start() {
         MinecraftServer.getCommandManager().register(new GameModeCommand());
+        MinecraftServer.getCommandManager().register(new PosCommand());
+        MinecraftServer.getCommandManager().register(new BlocksCommand());
         modules.forEach((s, abstractCoreModule) -> abstractCoreModule.start());
     }
 

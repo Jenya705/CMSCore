@@ -17,8 +17,8 @@ public class InstanceConfig {
     private final String defaultInstance;
 
     public static InstanceConfig from(ConfigData config) {
-        if (!config.has("testInstance")) {
-            ConfigData testInstance = config.get("testInstance", ConfigData.empty());
+        if (!config.has("test_instance")) {
+            ConfigData testInstance = config.get("test_instance", ConfigData.empty());
             testInstance.set("generator", "void");
         }
         Map<String, ConfigData> instanceConfigs = new HashMap<>();
@@ -29,7 +29,7 @@ public class InstanceConfig {
         });
         return new InstanceConfig(
                 Collections.unmodifiableMap(instanceConfigs),
-                config.get("default", "testInstance")
+                config.get("default", "test_instance")
         );
     }
 
