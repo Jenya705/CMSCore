@@ -8,17 +8,20 @@ import net.minestom.server.tag.Tag;
 import org.jglrxavpok.hephaistos.nbt.NBT;
 import org.jglrxavpok.hephaistos.nbt.NBTIntArray;
 
+import java.util.Objects;
+
 /**
  * @author Jenya705
  */
-@Getter
 @RequiredArgsConstructor
 public class CorePlayer {
 
     private static Tag<NBT> pos1Tag = Tag.NBT("pos1");
     private static Tag<NBT> pos2Tag = Tag.NBT("pos2");
 
+    @Getter
     private final Player player;
+
     private final Vec pos1;
     private final Vec pos2;
 
@@ -34,26 +37,41 @@ public class CorePlayer {
         return this;
     }
 
-    public Vec getMinPos() {
-        if (pos1 == null || pos2 == null) return null;
-        return pos1.min(pos2);
+    public boolean isEmptySelection() {
+        return pos1 == null && pos2 == null;
     }
 
-    public Vec getMaxPos() {
-        if (pos1 == null || pos2 == null) return null;
-        return pos2.max(pos1);
+    public boolean isSingleSelection() {
+        return !isEmptySelection() && !isFullSelection();
     }
 
-    public void forEachSelection(PosIConsumer consumer) {
-        Vec min = getMinPos();
-        Vec max = getMaxPos();
-        for (int x = min.blockX(); x <= max.blockX(); ++x) {
-            for (int y = min.blockY(); y <= max.blockY(); ++y) {
-                for (int z = min.blockZ(); z <= max.blockZ(); ++z) {
-                    consumer.apply(x, y, z);
-                }
-            }
+    public boolean isFullSelection() {
+        return pos1 != null && pos2 != null;
+    }
+
+    public Vec getSingleSelection() {
+        if (isSingleSelection()) {
+            return Objects.requireNonNullElse(pos1, pos2);
         }
+        return null;
+    }
+
+    public Selection getSelection() {
+        if (isSingleSelection()) {
+            Vec vec = getSingleSelection();
+            return new Selection(vec, vec);
+        }
+        if (isFullSelection()) {
+            return getFullSelection();
+        }
+        return null;
+    }
+
+    public Selection getFullSelection() {
+        if (isFullSelection()) {
+            return new Selection(pos1, pos2);
+        }
+        return null;
     }
 
     public static CorePlayer of(Player player) {

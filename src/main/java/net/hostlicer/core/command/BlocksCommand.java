@@ -33,8 +33,8 @@ public class BlocksCommand extends Command {
             CorePlayer corePlayer = CorePlayer.of(player);
             Block block = context.get(fillWith);
             Instance instance = player.getInstance();
-            if (instance == null) return;
-            corePlayer.forEachSelection((x, y, z) -> instance.setBlock(x, y, z, block));
+            if (instance == null || corePlayer.isEmptySelection()) return;
+            corePlayer.getSelection().forEach((x, y, z) -> instance.setBlock(x, y, z, block));
         }, fillWith);
 
     }
