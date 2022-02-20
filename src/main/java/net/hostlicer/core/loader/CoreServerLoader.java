@@ -14,8 +14,8 @@ public final class CoreServerLoader {
         if (application.getConfig().getSettings().isOnline()) {
             MojangAuth.init();
         }
-        server.start("127.0.0.1", application.getConfig().getServer().getPort());
         application.start();
+        server.start("127.0.0.1", application.getConfig().getServer().getPort());
     }
 
 }

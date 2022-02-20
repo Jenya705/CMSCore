@@ -10,9 +10,11 @@ import net.hostlicer.core.module.instance.InstanceModule;
 import net.hostlicer.core.module.ping.PingModule;
 import net.minestom.server.MinecraftServer;
 
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Getter
@@ -40,6 +42,9 @@ public class CoreApplication {
         MinecraftServer.getCommandManager().register(new GameModeCommand());
         MinecraftServer.getCommandManager().register(new PosCommand());
         MinecraftServer.getCommandManager().register(new BlocksCommand());
+        MinecraftServer.getConnectionManager().setUuidProvider((playerConnection, username) ->
+                UUID.nameUUIDFromBytes(("OfflinePlayer:"+username).getBytes(StandardCharsets.UTF_8))
+        );
         modules.forEach((s, abstractCoreModule) -> abstractCoreModule.start());
     }
 
