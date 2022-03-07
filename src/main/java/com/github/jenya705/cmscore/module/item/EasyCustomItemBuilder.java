@@ -1,6 +1,7 @@
 package com.github.jenya705.cmscore.module.item;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.minestom.server.attribute.Attribute;
 import net.minestom.server.attribute.AttributeOperation;
 import net.minestom.server.item.Material;
@@ -40,6 +41,13 @@ public class EasyCustomItemBuilder {
         return this;
     }
 
+    public EasyCustomItemBuilder translatable() {
+        Objects.requireNonNull(key, "not set key");
+        return displayName(Component
+                .translatable("item." + key.domain() + "." + key.value())
+        );
+    }
+
     public EasyCustomItemBuilder material(Material material) {
         this.material = material;
         return this;
@@ -53,6 +61,10 @@ public class EasyCustomItemBuilder {
     public EasyCustomItemBuilder displayName(Component displayName) {
         this.displayName = displayName;
         return this;
+    }
+
+    public EasyCustomItemBuilder displayName(String displayName) {
+        return displayName(LegacyComponentSerializer.legacySection().deserialize(displayName));
     }
 
     public CustomItem build() {

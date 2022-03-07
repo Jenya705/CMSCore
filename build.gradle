@@ -45,7 +45,7 @@ publishing {
     publications {
         maven(MavenPublication) {
             groupId = group
-            artifactId = 'hotcore'
+            artifactId = 'cmscore'
             version = version
             from components.java
         }
