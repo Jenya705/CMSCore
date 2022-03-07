@@ -25,7 +25,7 @@ public abstract class AbstractCoreModule {
 
     protected AbstractCoreModule(String name) {
         this.name = name;
-        logger = LoggerFactory.getLogger("HotCore - %s".formatted(name));
+        logger = LoggerFactory.getLogger("CMS - %s".formatted(name));
     }
 
     public abstract void start();

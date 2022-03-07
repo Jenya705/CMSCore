@@ -21,7 +21,7 @@ public class GiveCommand extends Command {
         var itemArgument = ArgumentType.String("item");
         var amountArgument = ArgumentType.Integer("amount").setDefaultValue(1);
 
-        HotItemModule itemModule = CoreApplication.getInstance().getModule("item");
+        CustomItemModule itemModule = CoreApplication.getInstance().getModule("item");
 
         addSyntax((sender, context) -> {
             if (!(sender.hasPermission("core.give")) || !(sender instanceof Player player)) {

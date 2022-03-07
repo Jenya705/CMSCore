@@ -11,7 +11,7 @@ import java.util.Map;
 /**
  * @author Jenya705
  */
-public interface HotItem {
+public interface CustomItem {
 
     Tag<String> idTag = Tag.String("hotID");
 
@@ -19,10 +19,10 @@ public interface HotItem {
 
     ItemStackBuilder createBuilder();
 
-    Map<Attribute, HotItemAttribute> getAttributes();
+    Map<Attribute, CustomItemAttribute> getAttributes();
 
-    default HotItem fastRegister() {
-        HotItemModule itemModule = CoreApplication.getInstance().getModule("item");
+    default CustomItem fastRegister() {
+        CustomItemModule itemModule = CoreApplication.getInstance().getModule("item");
         itemModule.registerItem(this);
         return this;
     }

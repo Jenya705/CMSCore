@@ -9,7 +9,7 @@ import net.minestom.server.attribute.AttributeOperation;
  */
 @Getter
 @RequiredArgsConstructor
-public class HotItemAttribute {
+public class CustomItemAttribute {
 
     private final float value;
     private final AttributeOperation operation;

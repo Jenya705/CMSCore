@@ -8,7 +8,7 @@ import com.github.jenya705.cmscore.module.instance.InstanceModule;
 import com.github.jenya705.cmscore.module.ping.PingModule;
 import lombok.Getter;
 import com.github.jenya705.cmscore.config.CoreConfig;
-import com.github.jenya705.cmscore.module.item.HotItemModule;
+import com.github.jenya705.cmscore.module.item.CustomItemModule;
 import net.minestom.server.MinecraftServer;
 
 import java.nio.charset.StandardCharsets;
@@ -37,7 +37,7 @@ public class CoreApplication {
         config = CoreConfig.load(path);
         addModule(new PingModule());
         addModule(new InstanceModule());
-        addModule(new HotItemModule());
+        addModule(new CustomItemModule());
     }
 
     public void start() {

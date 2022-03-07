@@ -4,16 +4,8 @@ plugins {
     id 'maven-publish'
 }
 
-group 'net.hotslicer'
+group 'com.github.jenya705'
 version '1.0'
-
-jar {
-    manifest {
-        attributes(
-                "Main-Class": "net.hotslicer.core.loader.CoreServerLoader"
-        )
-    }
-}
 
 shadowJar {
     if (project.hasProperty("dir")) {
@@ -34,7 +26,8 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.Minestom:Minestom:1.18-SNAPSHOT'
+    implementation 'com.github.Minestom:Minestom:master-SNAPSHOT'
+    implementation "com.google.guava:guava:31.1-jre"
     implementation 'com.github.Bloepiloepi:MinestomPvP:master-SNAPSHOT'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'

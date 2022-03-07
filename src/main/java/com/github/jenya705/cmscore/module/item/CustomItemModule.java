@@ -26,11 +26,11 @@ import java.util.function.BiConsumer;
 /**
  * @author Jenya705
  */
-public class HotItemModule extends AbstractCoreModule {
+public class CustomItemModule extends AbstractCoreModule {
 
-    private final Map<String, HotItem> items = new ConcurrentHashMap<>();
+    private final Map<String, CustomItem> items = new ConcurrentHashMap<>();
 
-    public HotItemModule() {
+    public CustomItemModule() {
         super("item");
     }
 
@@ -38,7 +38,7 @@ public class HotItemModule extends AbstractCoreModule {
     public void start() {
         MinecraftServer.getGlobalEventHandler().addChild(buildNode());
         MinecraftServer.getCommandManager().register(new GiveCommand());
-        registerItem(EasyHotItem
+        registerItem(EasyCustomItem
                 .builder()
                 .material(Material.STICK)
                 .attribute(Attribute.ATTACK_DAMAGE, 1, AttributeOperation.MULTIPLY_TOTAL)
@@ -55,7 +55,7 @@ public class HotItemModule extends AbstractCoreModule {
     public void stop() {
     }
 
-    public void registerItem(HotItem item) {
+    public void registerItem(CustomItem item) {
         getLogger().info("Registering item {}", item.key());
         items.put(item.key().toString(), item);
     }
@@ -80,32 +80,32 @@ public class HotItemModule extends AbstractCoreModule {
     }
 
     private void actAttribute(LivingEntity entity, ItemStack item, BiConsumer<AttributeInstance, AttributeModifier> consumer) {
-        HotItem hotItem = getHotItem(item);
-        if (hotItem == null) return;
-        Map<Attribute, HotItemAttribute> attributes = hotItem.getAttributes();
+        CustomItem customItem = getHotItem(item);
+        if (customItem == null) return;
+        Map<Attribute, CustomItemAttribute> attributes = customItem.getAttributes();
         if (attributes == null) return;
-        attributes.forEach((attribute, hotItemAttribute) -> consumer.accept(
+        attributes.forEach((attribute, customItemAttribute) -> consumer.accept(
                 entity.getAttribute(attribute),
                 new AttributeModifier(
-                        attributeUUID(hotItem, attribute),
-                        hotItem.key() + attribute.key(),
-                        hotItemAttribute.getValue(),
-                        hotItemAttribute.getOperation()
+                        attributeUUID(customItem, attribute),
+                        customItem.key() + attribute.key(),
+                        customItemAttribute.getValue(),
+                        customItemAttribute.getOperation()
                 )
         ));
     }
 
-    private UUID attributeUUID(HotItem item, Attribute attribute) {
+    private UUID attributeUUID(CustomItem item, Attribute attribute) {
         return UUID.nameUUIDFromBytes((item.key() + attribute.key()).getBytes(StandardCharsets.UTF_8));
     }
 
-    public HotItem getHotItem(ItemStack itemStack) {
-        String id = itemStack.getTag(HotItem.idTag);
+    public CustomItem getHotItem(ItemStack itemStack) {
+        String id = itemStack.getTag(CustomItem.idTag);
         if (id != null) return getHotItem(id);
         return null;
     }
 
-    public HotItem getHotItem(String id) {
+    public CustomItem getHotItem(String id) {
         return items.get(id);
     }
 

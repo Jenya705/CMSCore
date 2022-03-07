@@ -15,14 +15,14 @@ import java.util.Map;
  * @author Jenya705
  */
 @RequiredArgsConstructor
-public class EasyHotItem implements HotItem {
+public class EasyCustomItem implements CustomItem {
 
-    public static EasyHotItemBuilder builder() {
-        return new EasyHotItemBuilder();
+    public static EasyCustomItemBuilder builder() {
+        return new EasyCustomItemBuilder();
     }
 
     @Getter
-    private final Map<Attribute, HotItemAttribute> attributes;
+    private final Map<Attribute, CustomItemAttribute> attributes;
 
     private final NamespaceID key;
     private final Material material;
