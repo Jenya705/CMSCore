@@ -110,7 +110,7 @@ public class InstanceContainer {
         }
         else {
             instance.setChunkGenerator(instanceModule.getChunkGeneratorFactories().create(
-                    Objects.requireNonNullElse(generatorObject, "void").toString(), null)
+                    Objects.requireNonNullElse(generatorObject, "void").toString(), ConfigData.empty())
             );
         }
     }
