@@ -5,6 +5,9 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.attribute.Attribute;
+import net.minestom.server.attribute.AttributeInstance;
+import net.minestom.server.attribute.AttributeModifier;
+import net.minestom.server.attribute.AttributeOperation;
 import net.minestom.server.entity.EquipmentSlot;
 import net.minestom.server.entity.LivingEntity;
 import net.minestom.server.event.EventFilter;
@@ -14,9 +17,11 @@ import net.minestom.server.event.trait.ItemEvent;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BiFunction;
+import java.util.function.BiConsumer;
 
 /**
  * @author Jenya705
@@ -36,7 +41,7 @@ public class HotItemModule extends AbstractCoreModule {
         registerItem(EasyHotItem
                 .builder()
                 .material(Material.STICK)
-                .attribute(Attribute.ATTACK_DAMAGE, 1, true)
+                .attribute(Attribute.ATTACK_DAMAGE, 1, AttributeOperation.MULTIPLY_TOTAL)
                 .displayName(Component
                         .text("Damage doubler")
                         .color(NamedTextColor.DARK_RED)
@@ -67,22 +72,31 @@ public class HotItemModule extends AbstractCoreModule {
     }
 
     private void applyAttributes(LivingEntity entity, ItemStack item) {
-        applyForHotAttributes(entity, item, HotItemAttribute::apply);
+        actAttribute(entity, item, AttributeInstance::addModifier);
     }
 
     private void retAttributes(LivingEntity entity, ItemStack item) {
-        applyForHotAttributes(entity, item, HotItemAttribute::ret);
+        actAttribute(entity, item, AttributeInstance::removeModifier);
     }
 
-    private void applyForHotAttributes(LivingEntity entity, ItemStack item, BiFunction<HotItemAttribute, Float, Float> consumer) {
+    private void actAttribute(LivingEntity entity, ItemStack item, BiConsumer<AttributeInstance, AttributeModifier> consumer) {
         HotItem hotItem = getHotItem(item);
-        if (hotItem == null) return; // nothing to deal with
-        var attributes = hotItem.getAttributes();
-        if (attributes == null) return; // no attributes to be set
-        attributes.forEach((attribute, itemAttribute) -> {
-            var entityAttribute = entity.getAttribute(attribute);
-            entityAttribute.setBaseValue(consumer.apply(itemAttribute, entityAttribute.getValue()));
-        });
+        if (hotItem == null) return;
+        Map<Attribute, HotItemAttribute> attributes = hotItem.getAttributes();
+        if (attributes == null) return;
+        attributes.forEach((attribute, hotItemAttribute) -> consumer.accept(
+                entity.getAttribute(attribute),
+                new AttributeModifier(
+                        attributeUUID(hotItem, attribute),
+                        hotItem.key() + attribute.key(),
+                        hotItemAttribute.getValue(),
+                        hotItemAttribute.getOperation()
+                )
+        ));
+    }
+
+    private UUID attributeUUID(HotItem item, Attribute attribute) {
+        return UUID.nameUUIDFromBytes((item.key() + attribute.key()).getBytes(StandardCharsets.UTF_8));
     }
 
     public HotItem getHotItem(ItemStack itemStack) {

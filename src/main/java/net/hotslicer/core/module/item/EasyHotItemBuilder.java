@@ -2,6 +2,7 @@ package net.hotslicer.core.module.item;
 
 import net.kyori.adventure.text.Component;
 import net.minestom.server.attribute.Attribute;
+import net.minestom.server.attribute.AttributeOperation;
 import net.minestom.server.item.Material;
 import net.minestom.server.utils.NamespaceID;
 
@@ -25,8 +26,8 @@ public class EasyHotItemBuilder {
         return this;
     }
 
-    public EasyHotItemBuilder attribute(Attribute attribute, float value, boolean percentage) {
-        return attribute(attribute, new HotItemAttribute(value, percentage));
+    public EasyHotItemBuilder attribute(Attribute attribute, float value, AttributeOperation operation) {
+        return attribute(attribute, new HotItemAttribute(value, operation));
     }
 
     public EasyHotItemBuilder key(NamespaceID key) {
