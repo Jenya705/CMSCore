@@ -13,7 +13,7 @@ import java.util.Map;
  */
 public interface CustomItem {
 
-    Tag<String> idTag = Tag.String("hotID");
+    Tag<String> idTag = Tag.String("cmsID");
 
     NamespaceID key();
 

@@ -37,7 +37,7 @@ public class GiveCommand extends Command {
                 );
             }
             else {
-                item = itemModule.getHotItem(itemID.toString())
+                item = itemModule.getCustomItem(itemID.toString())
                         .createBuilder()
                         .amount(amount)
                         .build();
