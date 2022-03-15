@@ -9,9 +9,7 @@ import net.minestom.server.entity.Player;
 import net.minestom.server.item.Material;
 import net.minestom.server.utils.NamespaceID;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Consumer;
 
 /**
@@ -20,6 +18,7 @@ import java.util.function.Consumer;
 public class EasyCustomItemBuilder {
 
     private final Map<Attribute, CustomItemAttribute> attributes = new HashMap<>();
+    private final List<CustomItemListener> listeners = new ArrayList<>();
     private NamespaceID key;
     private Material material;
     private int customModelData = -1;
@@ -70,6 +69,11 @@ public class EasyCustomItemBuilder {
         return displayName(LegacyComponentSerializer.legacySection().deserialize(displayName));
     }
 
+    public EasyCustomItemBuilder listener(CustomItemListener listener) {
+        listeners.add(listener);
+        return this;
+    }
+
     public CustomItem build() {
         Objects.requireNonNull(material, "not set material");
         Objects.requireNonNull(key, "not set key");
@@ -78,7 +82,8 @@ public class EasyCustomItemBuilder {
                 key,
                 material,
                 customModelData,
-                displayName
+                displayName,
+                listeners
         );
     }
 
