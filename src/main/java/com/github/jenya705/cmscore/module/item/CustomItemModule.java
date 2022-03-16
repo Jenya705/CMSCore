@@ -1,7 +1,6 @@
 package com.github.jenya705.cmscore.module.item;
 
 import com.github.jenya705.cmscore.module.AbstractCoreModule;
-import com.github.jenya705.cmscore.module.item.event.AllCustomItemEvent;
 import com.github.jenya705.cmscore.module.item.event.CustomItemEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -10,13 +9,11 @@ import net.minestom.server.attribute.Attribute;
 import net.minestom.server.attribute.AttributeInstance;
 import net.minestom.server.attribute.AttributeModifier;
 import net.minestom.server.attribute.AttributeOperation;
-import net.minestom.server.entity.EquipmentSlot;
 import net.minestom.server.entity.LivingEntity;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventFilter;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.event.item.EntityEquipEvent;
-import net.minestom.server.event.trait.EntityEvent;
 import net.minestom.server.event.trait.ItemEvent;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
@@ -41,32 +38,6 @@ public class CustomItemModule extends AbstractCoreModule {
     public CustomItemModule() {
         super("item");
         MinecraftServer.getGlobalEventHandler().addChild(buildCustomItemEventNode());
-    }
-
-    private void listenEvent(Event event) {
-        if (event instanceof ItemEvent itemEvent) {
-            callEvent(itemEvent.getItemStack(), null, event);
-        }
-        if (event instanceof EntityEvent entityEvent &&
-                entityEvent.getEntity() instanceof LivingEntity livingEntity) {
-            callEvent(livingEntity.getItemInMainHand(), EquipmentSlot.MAIN_HAND, event);
-            callEvent(livingEntity.getItemInOffHand(), EquipmentSlot.OFF_HAND, event);
-            callEvent(livingEntity.getHelmet(), EquipmentSlot.HELMET, event);
-            callEvent(livingEntity.getChestplate(), EquipmentSlot.CHESTPLATE, event);
-            callEvent(livingEntity.getLeggings(), EquipmentSlot.LEGGINGS, event);
-            callEvent(livingEntity.getBoots(), EquipmentSlot.BOOTS, event);
-        }
-    }
-
-    private void callEvent(ItemStack itemStack, EquipmentSlot slot, Event event) {
-        CustomItem customItem = getCustomItem(itemStack);
-        if (customItem == null) return;
-        EventNode<CustomItemEvent> customItemEventHandler = getEventHandler(customItem);
-        if (customItemEventHandler != null) {
-            customItemEventHandler.call(new AllCustomItemEvent(
-                    customItem, itemStack, slot, event
-            ));
-        }
     }
 
     @Override
@@ -96,8 +67,7 @@ public class CustomItemModule extends AbstractCoreModule {
     }
 
     public EventNode<Event> buildCustomItemEventNode() {
-        EventNode<Event> globalNode = EventNode.all("custom-item-node");
-        globalNode.addListener(Event.class, this::listenEvent);
+        EventNode<Event> globalNode = EventNode.all("global-custom-item");
         return globalNode;
     }
 
@@ -151,10 +121,9 @@ public class CustomItemModule extends AbstractCoreModule {
     }
 
     public EventNode<CustomItemEvent> getEventHandler(String id) {
-        itemEventHandlers.computeIfAbsent(id, key -> EventNode.type(
+        return itemEventHandlers.computeIfAbsent(id, key -> EventNode.type(
                 "custom-item-handler-" + key, customItemEventFilter
         ));
-        return itemEventHandlers.get(id);
     }
 
     public EventNode<CustomItemEvent> getEventHandler(CustomItem item) {
