@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.EquipmentSlot;
+import net.minestom.server.entity.Player;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.item.ItemStack;
 
@@ -16,11 +17,12 @@ import java.util.Optional;
  */
 @Getter
 @RequiredArgsConstructor
-public class CustomItemRightClickEvent implements CustomItemEvent {
+public class CustomItemUseEvent implements CustomItemEvent {
 
     private final CustomItem customItem;
     private final EquipmentSlot slot;
     private final ItemStack itemStack;
+    private final Player whoUsed;
 
     @Getter(AccessLevel.PRIVATE)
     private final Entity atEntity;

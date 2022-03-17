@@ -55,7 +55,7 @@ public class EasyCustomItem implements CustomItem {
 
     @Override
     public CustomItem fastRegister() {
-        CustomItemModule itemModule = CoreApplication.getInstance().getModule("item");
+        CustomItemModule itemModule = CoreApplication.getInstance().getModule(CustomItemModule.class);
         itemModule.registerItem(this);
         if (!listeners.isEmpty()) {
             EventNode<CustomItemEvent> eventNode = itemModule.getEventHandler(this);

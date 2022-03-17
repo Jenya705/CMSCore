@@ -63,4 +63,14 @@ public class CoreApplication {
         return (T) modules.get(name.toLowerCase(Locale.ROOT));
     }
 
+    @SuppressWarnings("unchecked")
+    public <T extends AbstractCoreModule> T getModule(Class<T> clazz) {
+        return (T) modules
+                .values()
+                .stream()
+                .filter(it -> it.getClass().isAssignableFrom(clazz))
+                .findAny()
+                .orElse(null);
+    }
+
 }

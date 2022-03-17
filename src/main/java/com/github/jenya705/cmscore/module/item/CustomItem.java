@@ -22,7 +22,7 @@ public interface CustomItem {
     Map<Attribute, CustomItemAttribute> getAttributes();
 
     default CustomItem fastRegister() {
-        CustomItemModule itemModule = CoreApplication.getInstance().getModule("item");
+        CustomItemModule itemModule = CoreApplication.getInstance().getModule(CustomItemModule.class);
         itemModule.registerItem(this);
         return this;
     }

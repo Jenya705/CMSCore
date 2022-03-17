@@ -40,7 +40,7 @@ public class InstanceContainer {
     private final Instance instance;
     private final Point respawnPoint;
 
-    private final InstanceModule instanceModule = CoreApplication.getInstance().getModule("instance");
+    private final InstanceModule instanceModule = CoreApplication.getInstance().getModule(InstanceModule.class);
 
     public InstanceContainer(String instanceName, ConfigData data) {
         logger = LoggerFactory.getLogger("HotCore - %s".formatted(instanceName));
@@ -65,7 +65,7 @@ public class InstanceContainer {
     }
 
     private void nodes() {
-        EventNode<EntityEvent> eventNode = EventNode.event(
+        EventNode<EntityEvent> entityEventNode = EventNode.event(
                 "%s-instance".formatted(name),
                 EventFilter.ENTITY,
                 event -> {
@@ -76,10 +76,10 @@ public class InstanceContainer {
                 }
         );
         if (Objects.requireNonNullElse(instance.getTag(CoreTags.instancePvp), 0).byteValue() != 0) {
-            eventNode.addChild(PvpExtension.attackEvents());
-            eventNode.addChild(PvpExtension.damageEvents());
+            entityEventNode.addChild(PvpExtension.attackEvents());
+            entityEventNode.addChild(PvpExtension.damageEvents());
         }
-        MinecraftServer.getGlobalEventHandler().addChild(eventNode);
+        MinecraftServer.getGlobalEventHandler().addChild(entityEventNode);
     }
 
     private void loader(ConfigData data) {

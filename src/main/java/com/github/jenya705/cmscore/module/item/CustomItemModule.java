@@ -2,6 +2,7 @@ package com.github.jenya705.cmscore.module.item;
 
 import com.github.jenya705.cmscore.module.AbstractCoreModule;
 import com.github.jenya705.cmscore.module.item.event.CustomItemEvent;
+import com.github.jenya705.cmscore.module.item.event.CustomItemUseEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.MinecraftServer;
@@ -10,7 +11,6 @@ import net.minestom.server.attribute.AttributeInstance;
 import net.minestom.server.attribute.AttributeModifier;
 import net.minestom.server.attribute.AttributeOperation;
 import net.minestom.server.entity.LivingEntity;
-import net.minestom.server.event.Event;
 import net.minestom.server.event.EventFilter;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.event.item.EntityEquipEvent;
@@ -29,7 +29,7 @@ import java.util.function.BiConsumer;
  */
 public class CustomItemModule extends AbstractCoreModule {
 
-    private static final EventFilter<CustomItemEvent, CustomItem> customItemEventFilter =
+    public static final EventFilter<CustomItemEvent, CustomItem> customItemEventFilter =
             EventFilter.from(CustomItemEvent.class, CustomItem.class, CustomItemEvent::getCustomItem);
 
     private final Map<String, CustomItem> items = new ConcurrentHashMap<>();
@@ -37,14 +37,15 @@ public class CustomItemModule extends AbstractCoreModule {
 
     public CustomItemModule() {
         super("item");
-        MinecraftServer.getGlobalEventHandler().addChild(buildCustomItemEventNode());
+        MinecraftServer.getGlobalEventHandler()
+                .addChild(new CustomItemNodeManager(this).buildCustomItemEventNode());
     }
 
     @Override
     public void start() {
         MinecraftServer.getGlobalEventHandler().addChild(buildNode());
         MinecraftServer.getCommandManager().register(new GiveCommand());
-        registerItem(EasyCustomItem
+        EasyCustomItem
                 .builder()
                 .material(Material.STICK)
                 .attribute(Attribute.ATTACK_DAMAGE, 1, AttributeOperation.MULTIPLY_TOTAL)
@@ -53,8 +54,19 @@ public class CustomItemModule extends AbstractCoreModule {
                         .color(NamedTextColor.DARK_RED)
                 )
                 .key("cms:damage_doubler")
+                .listener(eventNode -> eventNode.addListener(CustomItemUseEvent.class, event -> {
+                    if (event.atBlock().isPresent()) {
+                        event.getWhoUsed().sendMessage("You interacted with block!");
+                    }
+                    else if (event.atEntity().isPresent()) {
+                        event.getWhoUsed().sendMessage("You interacted with entity!");
+                    }
+                    else {
+                        event.getWhoUsed().sendMessage("You interacted with air!");
+                    }
+                }))
                 .build()
-        );
+                .fastRegister();
     }
 
     @Override
@@ -64,11 +76,6 @@ public class CustomItemModule extends AbstractCoreModule {
     public void registerItem(CustomItem item) {
         getLogger().info("Registering item {}", item.key());
         items.put(item.key().toString(), item);
-    }
-
-    public EventNode<Event> buildCustomItemEventNode() {
-        EventNode<Event> globalNode = EventNode.all("global-custom-item");
-        return globalNode;
     }
 
     public EventNode<ItemEvent> buildNode() {
