@@ -1,9 +1,6 @@
 package com.github.jenya705.cmscore.module.item;
 
-import com.github.jenya705.cmscore.module.item.event.CustomItemEntityAttackEvent;
-import com.github.jenya705.cmscore.module.item.event.CustomItemEntityDamageEvent;
-import com.github.jenya705.cmscore.module.item.event.CustomItemEventFactoryMethod;
-import com.github.jenya705.cmscore.module.item.event.CustomItemUseEvent;
+import com.github.jenya705.cmscore.module.item.event.*;
 import lombok.RequiredArgsConstructor;
 import net.minestom.server.entity.EquipmentSlot;
 import net.minestom.server.entity.LivingEntity;
@@ -12,6 +9,7 @@ import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.event.entity.EntityAttackEvent;
 import net.minestom.server.event.entity.EntityDamageEvent;
+import net.minestom.server.event.item.EntityEquipEvent;
 import net.minestom.server.event.player.PlayerBlockInteractEvent;
 import net.minestom.server.event.player.PlayerEntityInteractEvent;
 import net.minestom.server.event.player.PlayerUseItemEvent;
@@ -33,6 +31,7 @@ public class CustomItemNodeManager {
         EventNode<Event> globalNode = EventNode.all("global-custom-item");
         registerEntityEvent(globalNode, EntityAttackEvent.class, CustomItemEntityAttackEvent::new);
         registerEntityEvent(globalNode, EntityDamageEvent.class, CustomItemEntityDamageEvent::new);
+        registerEntityEvent(globalNode, EntityEquipEvent.class, CustomItemEquipEvent::new);
         globalNode.addListener(PlayerBlockInteractEvent.class, event -> {
             ItemStack item = event.getPlayer().getItemInHand(event.getHand());
             CustomItem customItem = module.getCustomItem(item);
